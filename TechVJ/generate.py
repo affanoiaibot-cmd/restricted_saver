@@ -37,7 +37,7 @@ async def main(bot: Client, message: Message):
     user_id = int(message.from_user.id)
     
     # <!---Yahan se video link wala message hata diya gaya hai
-    api_id_msg = await bot.ask(user_id, "<b>Send Your API ID.\n\nClick On /skip To Skip This Process\n\nNOTE :- If You Skip This Then Your Account Ban Chance Is High.</b>", filters=filters.text)
+    api_id_msg = await bot.ask(user_id, "<b>Send Your API ID.\n\nClick On /skip To Skip This Process\n\nNOTE :- If You want to create such bot then contact @mineheartO.</b>", filters=filters.text)
     
     if api_id_msg.text == "/skip":
         api_id = API_ID
