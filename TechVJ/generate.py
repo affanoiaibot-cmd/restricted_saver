@@ -35,8 +35,10 @@ async def main(bot: Client, message: Message):
         await message.reply("**Your Are Already Logged In. First /logout Your Old Session. Then Do Login.**")
         return 
     user_id = int(message.from_user.id)
-    await message.reply("**How To Create Api Id And Api Hash.\n\nVideo Link :- https://youtu.be/LDtgwpI-N7M**")
+    
+    # Yahan se video link wala message hata diya gaya hai
     api_id_msg = await bot.ask(user_id, "<b>Send Your API ID.\n\nClick On /skip To Skip This Process\n\nNOTE :- If You Skip This Then Your Account Ban Chance Is High.</b>", filters=filters.text)
+    
     if api_id_msg.text == "/skip":
         api_id = API_ID
         api_hash = API_HASH
@@ -44,7 +46,7 @@ async def main(bot: Client, message: Message):
         try:
             api_id = int(api_id_msg.text)
         except ValueError:
-            await api_id_msg.reply("**Api id must be an integer, start your process again by /login**", quote=True, reply_markup=InlineKeyboardMarkup(gen_button))
+            await api_id_msg.reply("**Api id must be an integer, start your process again by /login**", quote=True)
             return
         api_hash_msg = await bot.ask(user_id, "**Now Send Me Your API HASH**", filters=filters.text)
         api_hash = api_hash_msg.text
