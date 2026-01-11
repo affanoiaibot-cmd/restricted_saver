@@ -26,7 +26,7 @@ async def logout(client, message):
     if user_data is None:
         return 
     await db.set_session(message.from_user.id, session=None)  
-    await message.reply("**Logout Successfully** ♦")
+    await message.reply("**Logout Successfully** 🤝")
 
 @Client.on_message(filters.private & ~filters.forwarded & filters.command(["login"]))
 async def main(bot: Client, message: Message):
@@ -36,7 +36,7 @@ async def main(bot: Client, message: Message):
         return 
     user_id = int(message.from_user.id)
     
-    # Yahan se video link wala message hata diya gaya hai
+    # <!---Yahan se video link wala message hata diya gaya hai
     api_id_msg = await bot.ask(user_id, "<b>Send Your API ID.\n\nClick On /skip To Skip This Process\n\nNOTE :- If You Skip This Then Your Account Ban Chance Is High.</b>", filters=filters.text)
     
     if api_id_msg.text == "/skip":
@@ -76,7 +76,7 @@ async def main(bot: Client, message: Message):
         await phone_code_msg.reply('**OTP is expired.**')
         return
     except SessionPasswordNeeded:
-        two_step_msg = await bot.ask(user_id, '**Your account has enabled two-step verification. Please provide the password.\n\nEnter /cancel to cancel The Procces**', filters=filters.text, timeout=300)
+        two_step_msg = await bot.ask(user_id, '**Your account has enabled two-step verification. Please provide the password 🔑.\n\nEnter /cancel to cancel The Procces**', filters=filters.text, timeout=300)
         if two_step_msg.text=='/cancel':
             return await two_step_msg.reply('<b>process cancelled !</b>')
         try:
@@ -103,7 +103,7 @@ async def main(bot: Client, message: Message):
                 pass
     except Exception as e:
         return await message.reply_text(f"<b>ERROR IN LOGIN:</b> `{e}`")
-    await bot.send_message(message.from_user.id, "<b>Account Login Successfully.\n\nIf You Get Any Error Related To AUTH KEY Then /logout first and /login again</b>")
+    await bot.send_message(message.from_user.id, "<b>Account Login Successfully🎊.\n\nIf You Get Any Error Related To AUTH KEY Then /logout first and /login again</b>")
 
 
 # Don't Remove Credit Tg - @VJ_Bots
