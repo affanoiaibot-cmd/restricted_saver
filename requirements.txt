@@ -1,5 +1,6 @@
-Setting,Value
-Service Type,Web Service (Default)
-Instance,Free Eco
-Ports,8080 (HTTP)
-Health Check,TCP on port 8080
+pyrofork
+tgcrypto
+motor
+Flask
+gunicorn
+psutil
