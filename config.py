@@ -23,7 +23,7 @@ API_ID = int(os.environ.get("API_ID", "35554205"))
 API_HASH = os.environ.get("API_HASH", "7b56a1a17366fb67ba913ff0cbac6e67")
 
 # Your Owner / Admin Id For Broadcast 
-ADMINS = int(os.environ.get("ADMINS", '8281644724 8237070487'))
+ADMINS = int(os.environ.get("ADMINS", "8281644724"))
 
 # Your Channel Id In Which Bot Upload Downloaded Video/File/Message etc.
 # And Make Your Bot Admin In this channel with full rights.
