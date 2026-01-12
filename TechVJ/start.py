@@ -26,7 +26,7 @@ async def downstatus(client, statusfile, message, chat):
         with open(statusfile, "r") as downread:
             txt = downread.read()
         try:
-            await client.edit_message_text(chat, message.id, f"<b>ðŸ“¥ Downloaded:</b> <b>{txt}</b>")
+            await client.edit_message_text(chat, message.id, f"<b>📥 Downloaded:</b> <b>{txt}</b>")
             await asyncio.sleep(10)
         except:
             await asyncio.sleep(5)
@@ -41,7 +41,7 @@ async def upstatus(client, statusfile, message, chat):
         with open(statusfile, "r") as upread:
             txt = upread.read()
         try:
-            await client.edit_message_text(chat, message.id, f"<b>ðŸ“¤ Uploaded:</b> <b>{txt}</b>")
+            await client.edit_message_text(chat, message.id, f"<b>📤 Uploaded:</b> <b>{txt}</b>")
             await asyncio.sleep(10)
         except:
             await asyncio.sleep(5)
@@ -59,26 +59,26 @@ async def send_start(client: Client, message: Message):
     
     buttons = [
         [
-            InlineKeyboardButton("ðŸ•¸ï¸ Developer", url = "https://t.me/mineheartO")
+            InlineKeyboardButton("🕸️ Developer", url = "https://t.me/mineheartO")
         ],
         [
-            InlineKeyboardButton('ðŸ” sá´œá´˜á´˜á´Ê€á´› É¢Ê€á´á´œá´˜', url='https://t.me/restricted_unlock'),
-            InlineKeyboardButton('ðŸ¤– á´œá´˜á´…á´€á´›á´‡ á´„Êœá´€É´É´á´‡ÊŸ', url='https://t.me/restricted_unlock')
+            InlineKeyboardButton('🔍 sᴜᴘᴘᴏʀᴛ ɢʀᴏᴜᴘ', url='https://t.me/restricted_unlock'),
+            InlineKeyboardButton('🤖 ᴜᴘᴅᴀᴛᴇ ᴄʜᴀɴɴᴇʟ', url='https://t.me/restricted_unlock')
         ],
         [
             # New button added here
-            InlineKeyboardButton('ðŸ¤– Another Bot', url='https://t.me/affanoiupload_bot')
+            InlineKeyboardButton('🤖 Another Bot', url='https://t.me/affanoiupload_bot')
         ]
     ]
     
     reply_markup = InlineKeyboardMarkup(buttons)
     await client.send_message(
         chat_id=message.chat.id, 
-        text=f"<b>ðŸ‘‹ Hi {message.from_user.mention},</b>\n\n"
-             f"<b>ðŸš€ I am Restricted Content Saver Bot.</b>\n\n"
-             f"<b>ðŸ“¦ I can help you to download restricted content via post links.</b>\n\n"
-             f"<b>ðŸ”‘ Please /login first to start downloading.</b>\n\n"
-             f"<b>â“ Use /help to know how to use me.</b>", 
+        text=f"<b>👋 Hi {message.from_user.mention},</b>\n\n"
+             f"<b>🚀 I am Restricted Content Saver Bot.</b>\n\n"
+             f"<b>📦 I can help you to download restricted content via post links.</b>\n\n"
+             f"<b>🔑 Please /login first to start downloading.</b>\n\n"
+             f"<b>❓ Use /help to know how to use me.</b>", 
         reply_markup=reply_markup, 
         reply_to_message_id=message.id
     )
@@ -98,7 +98,7 @@ async def send_cancel(client: Client, message: Message):
     batch_temp.IS_BATCH[message.from_user.id] = True
     await client.send_message(
         chat_id=message.chat.id, 
-        text="<b>âŒ Batch Successfully Cancelled!</b>"
+        text="<b>❌ Batch Successfully Cancelled!</b>"
     )
 
 @Client.on_message(filters.text & filters.private)
@@ -106,24 +106,24 @@ async def save(client: Client, message: Message):
     # Joining chat
     if ("https://t.me/+" in message.text or "https://t.me/joinchat/" in message.text) and LOGIN_SYSTEM == False:
         if TechVJUser is None:
-            await client.send_message(message.chat.id, "<b>âš ï¸ String Session is not Set!</b>", reply_to_message_id=message.id)
+            await client.send_message(message.chat.id, "<b>⚠️ String Session is not Set!</b>", reply_to_message_id=message.id)
             return
         try:
             try:
                 await TechVJUser.join_chat(message.text)
             except Exception as e: 
-                await client.send_message(message.chat.id, f"<b>âŒ Error:</b> <code>{e}</code>", reply_to_message_id=message.id)
+                await client.send_message(message.chat.id, f"<b>❌ Error:</b> <code>{e}</code>", reply_to_message_id=message.id)
                 return
-            await client.send_message(message.chat.id, "<b>âœ… Chat Joined Successfully!</b>", reply_to_message_id=message.id)
+            await client.send_message(message.chat.id, "<b>✅ Chat Joined Successfully!</b>", reply_to_message_id=message.id)
         except UserAlreadyParticipant:
-            await client.send_message(message.chat.id, "<b>â„¹ï¸ Chat already Joined.</b>", reply_to_message_id=message.id)
+            await client.send_message(message.chat.id, "<b>ℹ️ Chat already Joined.</b>", reply_to_message_id=message.id)
         except InviteHashExpired:
-            await client.send_message(message.chat.id, "<b>ðŸš« Invalid Link or Expired.</b>", reply_to_message_id=message.id)
+            await client.send_message(message.chat.id, "<b>🚫 Invalid Link or Expired.</b>", reply_to_message_id=message.id)
         return
     
     if "https://t.me/" in message.text:
         if batch_temp.IS_BATCH.get(message.from_user.id) == False:
-            return await message.reply_text("<b>âš ï¸ One Task Is Already Processing!</b>\n\n<b>Please wait for it to complete or use /cancel.</b>")
+            return await message.reply_text("<b>⚠️ One Task Is Already Processing!</b>\n\n<b>Please wait for it to complete or use /cancel.</b>")
         
         datas = message.text.split("/")
         temp_data = datas[-1].replace("?single","").split("-")
@@ -136,7 +136,7 @@ async def save(client: Client, message: Message):
         if LOGIN_SYSTEM == True:
             user_data = await db.get_session(message.from_user.id)
             if user_data is None:
-                await message.reply("<b>ðŸ”’ For Downloading Restricted Content You Have To /login First.</b>")
+                await message.reply("<b>🔒 For Downloading Restricted Content You Have To /login First.</b>")
                 return
             api_id = int(await db.get_api_id(message.from_user.id))
             api_hash = await db.get_api_hash(message.from_user.id)
@@ -144,10 +144,10 @@ async def save(client: Client, message: Message):
                 acc = Client("saverestricted", session_string=user_data, api_hash=api_hash, api_id=api_id)
                 await acc.connect()
             except:
-                return await message.reply("<b>âš ï¸ Your Session Expired! Please /logout and /login again.</b>")
+                return await message.reply("<b>⚠️ Your Session Expired! Please /logout and /login again.</b>")
         else:
             if TechVJUser is None:
-                await client.send_message(message.chat.id, f"<b>âš ï¸ String Session is not Set!</b>", reply_to_message_id=message.id)
+                await client.send_message(message.chat.id, f"<b>⚠️ String Session is not Set!</b>", reply_to_message_id=message.id)
                 return
             acc = TechVJUser
                 
@@ -162,7 +162,7 @@ async def save(client: Client, message: Message):
                     await handle_private(client, acc, message, chatid, msgid)
                 except Exception as e:
                     if ERROR_MESSAGE == True:
-                        await client.send_message(message.chat.id, f"<b>âŒ Error:</b> <code>{e}</code>", reply_to_message_id=message.id)
+                        await client.send_message(message.chat.id, f"<b>❌ Error:</b> <code>{e}</code>", reply_to_message_id=message.id)
     
             # bot
             elif "https://t.me/b/" in message.text:
@@ -171,7 +171,7 @@ async def save(client: Client, message: Message):
                     await handle_private(client, acc, message, username, msgid)
                 except Exception as e:
                     if ERROR_MESSAGE == True:
-                        await client.send_message(message.chat.id, f"<b>âŒ Error:</b> <code>{e}</code>", reply_to_message_id=message.id)
+                        await client.send_message(message.chat.id, f"<b>❌ Error:</b> <code>{e}</code>", reply_to_message_id=message.id)
             
             # public
             else:
@@ -179,7 +179,7 @@ async def save(client: Client, message: Message):
                 try:
                     msg = await client.get_messages(username, msgid)
                 except UsernameNotOccupied: 
-                    await client.send_message(message.chat.id, "<b>ðŸš« Username not occupied!</b>", reply_to_message_id=message.id)
+                    await client.send_message(message.chat.id, "<b>🚫 Username not occupied!</b>", reply_to_message_id=message.id)
                     return
                 try:
                     await client.copy_message(message.chat.id, msg.chat.id, msg.id, reply_to_message_id=message.id)
@@ -188,7 +188,7 @@ async def save(client: Client, message: Message):
                         await handle_private(client, acc, message, username, msgid)               
                     except Exception as e:
                         if ERROR_MESSAGE == True:
-                            await client.send_message(message.chat.id, f"<b>âŒ Error:</b> <code>{e}</code>", reply_to_message_id=message.id)
+                            await client.send_message(message.chat.id, f"<b>❌ Error:</b> <code>{e}</code>", reply_to_message_id=message.id)
 
             await asyncio.sleep(WAITING_TIME)
             
@@ -215,10 +215,10 @@ async def handle_private(client: Client, acc, message: Message, chatid, msgid: i
             return 
         except Exception as e:
             if ERROR_MESSAGE == True:
-                await client.send_message(message.chat.id, f"<b>âŒ Error:</b> <code>{e}</code>", reply_to_message_id=message.id)
+                await client.send_message(message.chat.id, f"<b>❌ Error:</b> <code>{e}</code>", reply_to_message_id=message.id)
             return 
 
-    smsg = await client.send_message(message.chat.id, '<b>â³ Downloading...</b>', reply_to_message_id=message.id)
+    smsg = await client.send_message(message.chat.id, '<b>⏳ Downloading...</b>', reply_to_message_id=message.id)
     asyncio.create_task(downstatus(client, f'{message.id}downstatus.txt', smsg, message.chat.id))
     
     try:
@@ -227,7 +227,7 @@ async def handle_private(client: Client, acc, message: Message, chatid, msgid: i
             os.remove(f'{message.id}downstatus.txt')
     except Exception as e:
         if ERROR_MESSAGE == True:
-            await client.send_message(message.chat.id, f"<b>âŒ Download Error:</b> <code>{e}</code>", reply_to_message_id=message.id) 
+            await client.send_message(message.chat.id, f"<b>❌ Download Error:</b> <code>{e}</code>", reply_to_message_id=message.id) 
         return await smsg.delete()
     
     if batch_temp.IS_BATCH.get(message.from_user.id): return 
@@ -265,7 +265,7 @@ async def handle_private(client: Client, acc, message: Message, chatid, msgid: i
 
     except Exception as e:
         if ERROR_MESSAGE == True:
-            await client.send_message(message.chat.id, f"<b>âŒ Upload Error:</b> <code>{e}</code>", reply_to_message_id=message.id)
+            await client.send_message(message.chat.id, f"<b>❌ Upload Error:</b> <code>{e}</code>", reply_to_message_id=message.id)
     
     if os.path.exists(f'{message.id}upstatus.txt'): 
         os.remove(f'{message.id}upstatus.txt')
