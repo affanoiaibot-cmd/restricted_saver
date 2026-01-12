@@ -137,3 +137,18 @@ async def restart_bot(client: Client, message: Message):
         await message.reply_text(f"<b>❌ Restart Failed:</b> <code>{e}</code>")
 
 # Don't Remove Credit @VJ_Bots
+# --- RESTART NOTIFICATION FUNCTION ---
+async def send_restart_notification(bot):
+    """Bot start hone par sabhi users ko 'bot restart' ka message bhejta hai"""
+    users = await db.get_all_users()
+    # Aapki request ke mutabik: bold aur lowercase (small) text
+    restart_text = "<b>bot restart</b>"
+    
+    async for user in users:
+        if 'id' in user:
+            try:
+                await bot.send_message(chat_id=int(user['id']), text=restart_text)
+                # Rate limit (FloodWait) se bachne ke liye thoda gap
+                await asyncio.sleep(0.05) 
+            except Exception:
+                continue # Blocked ya invalid users ke liye skip
