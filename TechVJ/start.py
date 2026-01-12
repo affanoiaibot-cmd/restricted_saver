@@ -57,6 +57,9 @@ async def send_start(client: Client, message: Message):
     if not await db.is_user_exist(message.from_user.id):
         await db.add_user(message.from_user.id, message.from_user.first_name)
     
+    # Image URL define ki gayi hai
+    START_IMG = "https://i.ibb.co/zTdzqj33/file-00000000a54c720996fc5596b4da6b9b.png"
+
     buttons = [
         [
             InlineKeyboardButton("🕸️ Developer", url = "https://t.me/mineheartO")
@@ -66,20 +69,22 @@ async def send_start(client: Client, message: Message):
             InlineKeyboardButton('🤖 ᴜᴘᴅᴀᴛᴇ ᴄʜᴀɴɴᴇʟ', url='https://t.me/restricted_unlock')
         ],
         [
-            # New button added here
             InlineKeyboardButton('🤖 Another Bot', url='https://t.me/affanoiupload_bot')
         ]
     ]
     
     reply_markup = InlineKeyboardMarkup(buttons)
-    await client.send_message(
-        chat_id=message.chat.id, 
-        text=f"<b>👋 Hi {message.from_user.mention},</b>\n\n"
-             f"<b>🚀 I am Restricted Content Saver Bot.</b>\n\n"
-             f"<b>📦 I can help you to download restricted content via post links.</b>\n\n"
-             f"<b>🔑 Please /login first to start downloading.</b>\n\n"
-             f"<b>❓ Use /help to know how to use me.</b>", 
-        reply_markup=reply_markup, 
+    
+    # client.send_message ki jagah client.send_photo use kiya hai
+    await client.send_photo(
+        chat_id=message.chat.id,
+        photo=START_IMG,
+        caption=f"<b>👋 Hi {message.from_user.mention},</b>\n\n"
+                f"<b>🚀 I am Restricted Content Saver Bot.</b>\n\n"
+                f"<b>📦 I can help you to download restricted content via post links.</b>\n\n"
+                f"<b>🔑 Please /login first to start downloading.</b>\n\n"
+                f"<b>❓ Use /help to know how to use me.</b>",
+        reply_markup=reply_markup,
         reply_to_message_id=message.id
     )
     return
@@ -103,7 +108,7 @@ async def send_cancel(client: Client, message: Message):
 
 @Client.on_message(filters.text & filters.private)
 async def save(client: Client, message: Message):
-    # Joining chat
+    # Joining chat logic
     if ("https://t.me/+" in message.text or "https://t.me/joinchat/" in message.text) and LOGIN_SYSTEM == False:
         if TechVJUser is None:
             await client.send_message(message.chat.id, "<b>⚠️ String Session is not Set!</b>", reply_to_message_id=message.id)
@@ -155,7 +160,6 @@ async def save(client: Client, message: Message):
         for msgid in range(fromID, toID+1):
             if batch_temp.IS_BATCH.get(message.from_user.id): break
             
-            # private
             if "https://t.me/c/" in message.text:
                 chatid = int("-100" + datas[4])
                 try:
@@ -164,7 +168,6 @@ async def save(client: Client, message: Message):
                     if ERROR_MESSAGE == True:
                         await client.send_message(message.chat.id, f"<b>❌ Error:</b> <code>{e}</code>", reply_to_message_id=message.id)
     
-            # bot
             elif "https://t.me/b/" in message.text:
                 username = datas[4]
                 try:
@@ -173,7 +176,6 @@ async def save(client: Client, message: Message):
                     if ERROR_MESSAGE == True:
                         await client.send_message(message.chat.id, f"<b>❌ Error:</b> <code>{e}</code>", reply_to_message_id=message.id)
             
-            # public
             else:
                 username = datas[3]
                 try:
@@ -199,7 +201,6 @@ async def save(client: Client, message: Message):
                 pass                        
         batch_temp.IS_BATCH[message.from_user.id] = True
 
-# handle private
 async def handle_private(client: Client, acc, message: Message, chatid, msgid: int):
     msg: Message = await acc.get_messages(chatid, msgid)
     if msg.empty: return 
@@ -275,7 +276,6 @@ async def handle_private(client: Client, acc, message: Message, chatid, msgid: i
         
     await smsg.delete()
 
-# get the type of message
 def get_message_type(msg: pyrogram.types.Message):
     if msg.document: return "Document"
     if msg.video: return "Video"
