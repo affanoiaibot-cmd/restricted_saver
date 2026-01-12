@@ -4,6 +4,8 @@
 
 from pyrogram import Client
 from config import API_ID, API_HASH, BOT_TOKEN, STRING_SESSION, LOGIN_SYSTEM
+# Restart notification function ko import kiya gaya hai
+from TechVJ.broadcast import send_restart_notification 
 
 if STRING_SESSION is not None and LOGIN_SYSTEM == False:
 	TechVJUser = Client("TechVJ", api_id=API_ID, api_hash=API_HASH, session_string=STRING_SESSION)
@@ -26,12 +28,17 @@ class Bot(Client):
 
       
     async def start(self):
-            
         await super().start()
         print('Bot Started Powered By @VJ_Bots')
+        
+        # Bot start hote hi sabhi users ko notification bhejega
+        try:
+            await send_restart_notification(self)
+            print("Restart notification sent to all users!")
+        except Exception as e:
+            print(f"Notification Error: {e}")
 
     async def stop(self, *args):
-
         await super().stop()
         print('Bot Stopped Bye')
 
