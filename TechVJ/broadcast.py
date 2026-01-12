@@ -142,7 +142,7 @@ async def send_restart_notification(bot):
     """Bot start hone par sabhi users ko 'bot restart' ka message bhejta hai"""
     users = await db.get_all_users()
     # Aapki request ke mutabik: bold aur lowercase (small) text
-    restart_text = "<b>bot restart</b>"
+    restart_text = "<b>ʙᴏᴛ ʀᴇsᴛᴀʀᴛᴇᴅ !!</b>"
     
     async for user in users:
         if 'id' in user:
