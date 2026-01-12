@@ -10,20 +10,22 @@ import asyncio
 import datetime
 import time
 
-async def broadcast_messages(user_id, message):
+async def broadcast_messages(user_id, message, is_pin):
     try:
-        # Copying the message to the user
+        # Message copy karna
         msg = await message.copy(chat_id=user_id)
-        try:
-            # Pinning the broadcasted message
-            await msg.pin(disable_notification=False)
-        except Exception:
-            # If pinning fails (e.g., user blocked or internal error), we skip it
-            pass
+        
+        # Agar is_pin True hai, toh pin karega
+        if is_pin:
+            try:
+                await msg.pin(both_sides=True)
+            except Exception:
+                pass # Pin fail hone par broadcast chalta rahega
+                
         return True, "Success"
     except FloodWait as e:
         await asyncio.sleep(e.value)
-        return await broadcast_messages(user_id, message)
+        return await broadcast_messages(user_id, message, is_pin)
     except InputUserDeactivated:
         await db.delete_user(int(user_id))
         return False, "Deleted"
@@ -33,18 +35,18 @@ async def broadcast_messages(user_id, message):
     except PeerIdInvalid:
         await db.delete_user(int(user_id))
         return False, "Error"
-    except Exception as e:
+    except Exception:
         return False, "Error"
 
-@Client.on_message(filters.command("broadcast") & filters.user(ADMINS) & filters.reply)
-async def broadcast(bot, message):
+async def process_broadcast(bot, message, is_pin):
     users = await db.get_all_users()
     b_msg = message.reply_to_message
+    
     if not b_msg:
         return await message.reply_text("<b>**Reply This Command To Your Broadcast Message**</b>")
     
     sts = await message.reply_text(
-        text='<b>Broadcasting your messages...</b>'
+        text=f"<b>Broadcasting {'with Pin' if is_pin else ''} your messages...</b>"
     )
     
     start_time = time.time()
@@ -57,7 +59,7 @@ async def broadcast(bot, message):
 
     async for user in users:
         if 'id' in user:
-            pti, sh = await broadcast_messages(int(user['id']), b_msg)
+            pti, sh = await broadcast_messages(int(user['id']), b_msg, is_pin)
             if pti:
                 success += 1
             elif pti == False:
@@ -69,7 +71,7 @@ async def broadcast(bot, message):
                     failed += 1
             done += 1
             
-            # Progress update every 20 users
+            # Progress status update
             if not done % 20:
                 await sts.edit(
                     f"<b>**Broadcast in progress:**</b>\n\n"
@@ -85,9 +87,9 @@ async def broadcast(bot, message):
     
     time_taken = datetime.timedelta(seconds=int(time.time()-start_time))
     
-    # Final Bold Message
+    # Final Result Message
     await sts.edit(
-        f"<b>**Broadcast Completed**</b>\n"
+        f"<b>**{'Pin ' if is_pin else ''}Broadcast Completed**</b>\n"
         f"<b>Completed in {time_taken} seconds.</b>\n\n"
         f"<b>Total Users:</b> {total_users}\n"
         f"<b>Completed:</b> {done} / {total_users}\n"
@@ -95,6 +97,18 @@ async def broadcast(bot, message):
         f"<b>Blocked:</b> {blocked}\n"
         f"<b>Deleted:</b> {deleted}"
     )
+
+# --- COMMANDS ---
+
+# Command: /broadcast (Sirf message jayega)
+@Client.on_message(filters.command("broadcast") & filters.user(ADMINS) & filters.reply)
+async def broadcast_only(bot, message):
+    await process_broadcast(bot, message, is_pin=False)
+
+# Command: /pin_broadcast (Message + Pin dono hoga)
+@Client.on_message(filters.command("pin_broadcast") & filters.user(ADMINS) & filters.reply)
+async def broadcast_with_pin(bot, message):
+    await process_broadcast(bot, message, is_pin=True)
 
 # Don't Remove Credit @VJ_Bots
 # Subscribe YouTube Channel For Amazing Bot @Tech_VJ
