@@ -8,6 +8,7 @@ from TechVJ.broadcast import send_restart_notification
 from threading import Thread
 from app import run_web # app.py se function import kiya
 
+# User Client Session Check
 if STRING_SESSION is not None and LOGIN_SYSTEM == False:
     TechVJUser = Client("TechVJ", api_id=API_ID, api_hash=API_HASH, session_string=STRING_SESSION)
     TechVJUser.start()
@@ -31,21 +32,25 @@ class Bot(Client):
         await super().start()
         print('Bot Started Powered By @VJ_Bots')
         
-        # Notification ko background task mein daala taaki bot hang na ho
+        # Background task for restart notification
         try:
+            # Isse bot commands ke liye turant ready ho jayega
             asyncio.create_task(send_restart_notification(self))
-            print("Restart notification background mein bhej di gayi hai!")
+            print("Restart notification background loop mein start ho gayi hai!")
         except Exception as e:
             print(f"Notification Error: {e}")
 
     async def stop(self, *args):
         await super().stop()
-        print('Bot Stopped Bye')
+        print('Bot Stopped. Bye!')
 
 if __name__ == "__main__":
-    # 1. Flask server ko alag thread mein start karein
-    print("Starting Web Server on Port 8080...")
-    Thread(target=run_web).start()
+    # 1. Flask server ko alag thread mein start karein (Daemon = True)
+    # Ye Koyeb ko "Healthy" signal bhejne ke liye zaroori hai
+    print("Starting Health Check Web Server...")
+    t = Thread(target=run_web)
+    t.daemon = True # Isse bot ke saath server properly manage hoga
+    t.start()
     
     # 2. Pyrogram Bot ko start karein
     bot = Bot()
