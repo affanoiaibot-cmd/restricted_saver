@@ -1,3 +1,7 @@
+# Don't Remove Credit Tg - @VJ_Bots
+# Subscribe YouTube Channel For Amazing Bot https://youtube.com/@Tech_VJ
+# Ask Doubt on telegram @KingVJ01
+
 import sys
 import os
 import asyncio
@@ -6,25 +10,29 @@ from pyrogram.types import Message
 from database.db import db  
 from config import ADMINS   
 
-# Bot start hote hi terminal mein print hoga agar file load hui
-print("✅ status.py file successfully load ho gayi hai!")
+@Client.on_message(filters.command(["stats", "restart"]) & filters.private)
+async def status_and_restart_handler(client: Client, message: Message):
+    # 1. Sabse pehle check karein ki user Admin hai ya nahi
+    if message.from_user.id not in ADMINS:
+        return await message.reply_text(f"<b>❌ Access Denied!</b>\n\nYour ID: <code>{message.from_user.id}</code> is not in Admin List.")
 
-@Client.on_message(filters.command("stats") & filters.user(ADMINS))
-async def bot_stats(client: Client, message: Message):
-    print(f"Stats command received from {message.from_user.id}")
-    status_msg = await message.reply_text("<b>🔄 Statistics fetch kar raha hoon...</b>")
-    try:
-        total_users = await db.total_users_count()
-        await status_msg.edit(f"<b>📊 Bot Statistics</b>\n\n<b>👤 Total Users:</b> <code>{total_users}</code>")
-    except Exception as e:
-        await status_msg.edit(f"<b>❌ Error:</b> <code>{e}</code>")
+    cmd = message.command[0]
 
-@Client.on_message(filters.command("restart") & filters.user(ADMINS))
-async def restart_bot(client: Client, message: Message):
-    print(f"Restart command received from {message.from_user.id}")
-    try:
-        msg = await message.reply_text("<b>♻️ Restarting system...</b>")
+    # --- STATS COMMAND ---
+    if cmd == "stats":
+        sts_msg = await message.reply_text("<b>🔍 Fetching total users...</b>")
+        try:
+            # Yahan hum check kar rahe hain ki function name sahi hai ya nahi
+            total_users = await db.total_users_count()
+            await sts_msg.edit(f"<b>📊 <u>Bot Statistics</u></b>\n\n<b>👤 Total Users:</b> <code>{total_users}</code>")
+        except Exception as e:
+            await sts_msg.edit(f"<b>❌ Database Error:</b>\n<code>{e}</code>\n\n<i>Check if total_users_count() exists in db.py</i>")
+
+    # --- RESTART COMMAND ---
+    elif cmd == "restart":
+        await message.reply_text("<b>♻️ Restarting bot system... Please wait.</b>")
         await asyncio.sleep(2)
+        # Restart the process
         os.execl(sys.executable, sys.executable, *sys.argv)
-    except Exception as e:
-        await message.reply_text(f"<b>❌ Restart Failed:</b> <code>{e}</code>")
+
+# Don't Remove Credit @VJ_Bots
