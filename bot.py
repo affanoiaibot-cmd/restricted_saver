@@ -1,15 +1,16 @@
 # Don't Remove Credit Tg - @VJ_Bots
 # Subscribe YouTube Channel For Amazing Bot https://youtube.com/@Tech_VJ
-# Ask Doubt on telegram @KingVJ01
 
+import asyncio
 from pyrogram import Client
 from config import API_ID, API_HASH, BOT_TOKEN, STRING_SESSION, LOGIN_SYSTEM
-# Restart notification function ko import kiya gaya hai
 from TechVJ.broadcast import send_restart_notification 
+from threading import Thread
+from app import run_web # app.py se function import kiya
 
 if STRING_SESSION is not None and LOGIN_SYSTEM == False:
-	TechVJUser = Client("TechVJ", api_id=API_ID, api_hash=API_HASH, session_string=STRING_SESSION)
-	TechVJUser.start()
+    TechVJUser = Client("TechVJ", api_id=API_ID, api_hash=API_HASH, session_string=STRING_SESSION)
+    TechVJUser.start()
 else:
     TechVJUser = None
 
@@ -26,15 +27,14 @@ class Bot(Client):
             sleep_threshold=5
         )
 
-      
     async def start(self):
         await super().start()
         print('Bot Started Powered By @VJ_Bots')
         
-        # Bot start hote hi sabhi users ko notification bhejega
+        # Notification ko background task mein daala taaki bot hang na ho
         try:
-            await send_restart_notification(self)
-            print("Restart notification sent to all users!")
+            asyncio.create_task(send_restart_notification(self))
+            print("Restart notification background mein bhej di gayi hai!")
         except Exception as e:
             print(f"Notification Error: {e}")
 
@@ -43,9 +43,10 @@ class Bot(Client):
         print('Bot Stopped Bye')
 
 if __name__ == "__main__":
+    # 1. Flask server ko alag thread mein start karein
+    print("Starting Web Server on Port 8080...")
+    Thread(target=run_web).start()
+    
+    # 2. Pyrogram Bot ko start karein
     bot = Bot()
     bot.run()
-
-# Don't Remove Credit Tg - @VJ_Bots
-# Subscribe YouTube Channel For Amazing Bot https://youtube.com/@Tech_VJ
-# Ask Doubt on telegram @KingVJ01
