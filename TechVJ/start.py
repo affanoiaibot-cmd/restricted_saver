@@ -16,6 +16,7 @@ from bot import TechVJUser
 class batch_temp(object):
     IS_BATCH = {}
 
+# Download status writer
 async def downstatus(client, statusfile, message, chat):
     while True:
         if os.path.exists(statusfile):
@@ -31,7 +32,7 @@ async def downstatus(client, statusfile, message, chat):
         except:
             await asyncio.sleep(5)
 
-# upload status
+# Upload status writer
 async def upstatus(client, statusfile, message, chat):
     while True:
         if os.path.exists(statusfile):
@@ -46,29 +47,25 @@ async def upstatus(client, statusfile, message, chat):
         except:
             await asyncio.sleep(5)
 
-# progress writer
+# Progress percentage calculator
 def progress(current, total, message, type):
     with open(f'{message.id}{type}status.txt', "w") as fileup:
         fileup.write(f"{current * 100 / total:.1f}%")
 
-# start command
+# --- COMMANDS ---
+
 @Client.on_message(filters.command(["start"]))
 async def send_start(client: Client, message: Message):
     if not await db.is_user_exist(message.from_user.id):
         await db.add_user(message.from_user.id, message.from_user.first_name)
     
     buttons = [
-        [
-            InlineKeyboardButton("🕸️ Developer", url = "https://t.me/mineheartO")
-        ],
+        [InlineKeyboardButton("🕸️ Developer", url="https://t.me/mineheartO")],
         [
             InlineKeyboardButton('🔍 sᴜᴘᴘᴏʀᴛ ɢʀᴏᴜᴘ', url='https://t.me/restricted_unlock'),
             InlineKeyboardButton('🤖 ᴜᴘᴅᴀᴛᴇ ᴄʜᴀɴɴᴇʟ', url='https://t.me/restricted_unlock')
         ],
-        [
-            # New button added here
-            InlineKeyboardButton('🤖 Another Bot', url='https://t.me/affanoiupload_bot')
-        ]
+        [InlineKeyboardButton('🤖 Another Bot', url='https://t.me/affanoiupload_bot')]
     ]
     
     reply_markup = InlineKeyboardMarkup(buttons)
@@ -82,9 +79,7 @@ async def send_start(client: Client, message: Message):
         reply_markup=reply_markup, 
         reply_to_message_id=message.id
     )
-    return
 
-# help command
 @Client.on_message(filters.command(["help"]))
 async def send_help(client: Client, message: Message):
     await client.send_message(
@@ -92,7 +87,6 @@ async def send_help(client: Client, message: Message):
         text=f"<b>{HELP_TXT}</b>"
     )
 
-# cancel command
 @Client.on_message(filters.command(["cancel"]))
 async def send_cancel(client: Client, message: Message):
     batch_temp.IS_BATCH[message.from_user.id] = True
@@ -101,9 +95,11 @@ async def send_cancel(client: Client, message: Message):
         text="<b>❌ Batch Successfully Cancelled!</b>"
     )
 
+# --- LINK HANDLING ---
+
 @Client.on_message(filters.text & filters.private)
 async def save(client: Client, message: Message):
-    # Joining chat
+    # Handling invite links
     if ("https://t.me/+" in message.text or "https://t.me/joinchat/" in message.text) and LOGIN_SYSTEM == False:
         if TechVJUser is None:
             await client.send_message(message.chat.id, "<b>⚠️ String Session is not Set!</b>", reply_to_message_id=message.id)
@@ -121,6 +117,7 @@ async def save(client: Client, message: Message):
             await client.send_message(message.chat.id, "<b>🚫 Invalid Link or Expired.</b>", reply_to_message_id=message.id)
         return
     
+    # Handling post links
     if "https://t.me/" in message.text:
         if batch_temp.IS_BATCH.get(message.from_user.id) == False:
             return await message.reply_text("<b>⚠️ One Task Is Already Processing!</b>\n\n<b>Please wait for it to complete or use /cancel.</b>")
@@ -155,7 +152,7 @@ async def save(client: Client, message: Message):
         for msgid in range(fromID, toID+1):
             if batch_temp.IS_BATCH.get(message.from_user.id): break
             
-            # private
+            # Private Channel Link
             if "https://t.me/c/" in message.text:
                 chatid = int("-100" + datas[4])
                 try:
@@ -164,7 +161,7 @@ async def save(client: Client, message: Message):
                     if ERROR_MESSAGE == True:
                         await client.send_message(message.chat.id, f"<b>❌ Error:</b> <code>{e}</code>", reply_to_message_id=message.id)
     
-            # bot
+            # Bot Link
             elif "https://t.me/b/" in message.text:
                 username = datas[4]
                 try:
@@ -173,7 +170,7 @@ async def save(client: Client, message: Message):
                     if ERROR_MESSAGE == True:
                         await client.send_message(message.chat.id, f"<b>❌ Error:</b> <code>{e}</code>", reply_to_message_id=message.id)
             
-            # public
+            # Public Channel Link
             else:
                 username = datas[3]
                 try:
@@ -199,7 +196,8 @@ async def save(client: Client, message: Message):
                 pass                        
         batch_temp.IS_BATCH[message.from_user.id] = True
 
-# handle private
+# --- MEDIA HANDLER ---
+
 async def handle_private(client: Client, acc, message: Message, chatid, msgid: int):
     msg: Message = await acc.get_messages(chatid, msgid)
     if msg.empty: return 
@@ -275,7 +273,6 @@ async def handle_private(client: Client, acc, message: Message, chatid, msgid: i
         
     await smsg.delete()
 
-# get the type of message
 def get_message_type(msg: pyrogram.types.Message):
     if msg.document: return "Document"
     if msg.video: return "Video"
@@ -286,7 +283,3 @@ def get_message_type(msg: pyrogram.types.Message):
     if msg.photo: return "Photo"
     if msg.text: return "Text"
     return None
-
-# Don't Remove Credit @VJ_Bots
-# Subscribe YouTube Channel For Amazing Bot @Tech_VJ
-# Ask Doubt on telegram @KingVJ01
