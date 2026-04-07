@@ -1,6 +1,7 @@
-pyrofork
+pyrogram
 tgcrypto
 motor
-Flask
+pymongo
+pyromod
+flask
 gunicorn
-psutil
