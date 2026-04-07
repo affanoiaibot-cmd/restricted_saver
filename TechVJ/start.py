@@ -11,7 +11,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 from config import API_ID, API_HASH, ERROR_MESSAGE, LOGIN_SYSTEM, STRING_SESSION, CHANNEL_ID, WAITING_TIME
 from database.db import db
 from TechVJ.strings import HELP_TXT
-from bot import TechVJUser
+import bot # Changed: Direct import of bot module to access live global variables
 
 class batch_temp(object):
     IS_BATCH = {}
@@ -22,7 +22,7 @@ async def downstatus(client, statusfile, message, chat):
         if os.path.exists(statusfile):
             break
         await asyncio.sleep(3)
-      
+        
     while os.path.exists(statusfile):
         with open(statusfile, "r") as downread:
             txt = downread.read()
@@ -101,12 +101,12 @@ async def send_cancel(client: Client, message: Message):
 async def save(client: Client, message: Message):
     # Handling invite links
     if ("https://t.me/+" in message.text or "https://t.me/joinchat/" in message.text) and LOGIN_SYSTEM == False:
-        if TechVJUser is None:
+        if bot.TechVJUser is None:
             await client.send_message(message.chat.id, "<b>⚠️ String Session is not Set!</b>", reply_to_message_id=message.id)
             return
         try:
             try:
-                await TechVJUser.join_chat(message.text)
+                await bot.TechVJUser.join_chat(message.text)
             except Exception as e: 
                 await client.send_message(message.chat.id, f"<b>❌ Error:</b> <code>{e}</code>", reply_to_message_id=message.id)
                 return
@@ -138,15 +138,17 @@ async def save(client: Client, message: Message):
             api_id = int(await db.get_api_id(message.from_user.id))
             api_hash = await db.get_api_hash(message.from_user.id)
             try:
-                acc = Client("saverestricted", session_string=user_data, api_hash=api_hash, api_id=api_id)
+                # FIX: Added in_memory=True & dynamic name to prevent database lock errors!
+                acc = Client(f"user_{message.from_user.id}", session_string=user_data, api_hash=api_hash, api_id=api_id, in_memory=True)
                 await acc.connect()
-            except:
+            except Exception as e:
+                print(f"Login Error: {e}")
                 return await message.reply("<b>⚠️ Your Session Expired! Please /logout and /login again.</b>")
         else:
-            if TechVJUser is None:
-                await client.send_message(message.chat.id, f"<b>⚠️ String Session is not Set!</b>", reply_to_message_id=message.id)
+            if bot.TechVJUser is None:
+                await client.send_message(message.chat.id, f"<b>⚠️ String Session is not Set in Config!</b>", reply_to_message_id=message.id)
                 return
-            acc = TechVJUser
+            acc = bot.TechVJUser
                 
         batch_temp.IS_BATCH[message.from_user.id] = False
         for msgid in range(fromID, toID+1):
@@ -177,12 +179,12 @@ async def save(client: Client, message: Message):
                     msg = await client.get_messages(username, msgid)
                 except UsernameNotOccupied: 
                     await client.send_message(message.chat.id, "<b>🚫 Username not occupied!</b>", reply_to_message_id=message.id)
-                    return
+                    continue # Modified to continue instead of return for batch
                 try:
                     await client.copy_message(message.chat.id, msg.chat.id, msg.id, reply_to_message_id=message.id)
                 except:
                     try:    
-                        await handle_private(client, acc, message, username, msgid)               
+                        await handle_private(client, acc, message, username, msgid)                
                     except Exception as e:
                         if ERROR_MESSAGE == True:
                             await client.send_message(message.chat.id, f"<b>❌ Error:</b> <code>{e}</code>", reply_to_message_id=message.id)
@@ -248,7 +250,7 @@ async def handle_private(client: Client, acc, message: Message, chatid, msgid: i
             await client.send_animation(chat, file, reply_to_message_id=message.id)
             
         elif "Sticker" == msg_type:
-            await client.send_sticker(chat, file, reply_to_message_id=message.id)     
+            await client.send_sticker(chat, file, reply_to_message_id=message.id)      
 
         elif "Voice" == msg_type:
             await client.send_voice(chat, file, caption=caption, reply_to_message_id=message.id, progress=progress, progress_args=[message,"up"])
