@@ -61,4 +61,4 @@ class Database:
         return user.get('api_hash')
 
 # Yahan par maine DB_NAME use kiya hai config.py se
-db = Database(DB_URI, DB_NAME)
+db = Database(mongodb+srv://jaffernova21_db_user:kdcxktjJo6dEXEWm@cluster0.rdci8wh.mongodb.net/?appName=Cluster0, vjsavecontentbot)
