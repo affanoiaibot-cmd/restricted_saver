@@ -1,5 +1,6 @@
 from flask import Flask
 import logging
+from config import PORT # config.py se PORT import kiya
 
 # Flask ke faltu pings (health checks) logs mein na dikhein, uske liye:
 log = logging.getLogger('werkzeug')
@@ -14,5 +15,5 @@ def hello_world():
 
 def run_web():
     # '0.0.0.0' isliye zaroori hai taaki Koyeb bot ko internet se connect kar sake
-    # Port 8080 Koyeb ki default setting hoti hai
-    app.run(host='0.0.0.0', port=8080)
+    # Port ko ab config.py se dynamically liya ja raha hai
+    app.run(host='0.0.0.0', port=PORT)
