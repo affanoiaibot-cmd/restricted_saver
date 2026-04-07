@@ -8,12 +8,8 @@ from TechVJ.broadcast import send_restart_notification
 from threading import Thread
 from app import run_web # app.py se function import kiya
 
-# User Client Session Check
-if STRING_SESSION is not None and LOGIN_SYSTEM == False:
-    TechVJUser = Client("TechVJ", api_id=API_ID, api_hash=API_HASH, session_string=STRING_SESSION)
-    TechVJUser.start()
-else:
-    TechVJUser = None
+# Global variable define kar rahe hain taaki dusre files me import ho sake
+TechVJUser = None 
 
 class Bot(Client):
 
@@ -32,6 +28,18 @@ class Bot(Client):
         await super().start()
         print('Bot Started Powered By @VJ_Bots')
         
+        # User Client Session Check & Start (Async tareeqe se)
+        global TechVJUser
+        if STRING_SESSION is not None and LOGIN_SYSTEM == False:
+            try:
+                TechVJUser = Client("TechVJ", api_id=API_ID, api_hash=API_HASH, session_string=STRING_SESSION)
+                await TechVJUser.start()
+                print("Userbot (String Session) globally start ho gaya hai!")
+            except Exception as e:
+                print(f"Userbot Start hone mein error aayi: {e}")
+        else:
+            TechVJUser = None
+        
         # Background task for restart notification
         try:
             # Isse bot commands ke liye turant ready ho jayega
@@ -41,6 +49,12 @@ class Bot(Client):
             print(f"Notification Error: {e}")
 
     async def stop(self, *args):
+        global TechVJUser
+        if TechVJUser:
+            try:
+                await TechVJUser.stop()
+            except:
+                pass
         await super().stop()
         print('Bot Stopped. Bye!')
 
